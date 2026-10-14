@@ -1,0 +1,22 @@
+const multer = require("multer")
+
+const storage = multer.diskStorage({
+    destination: (req, file, callback) => {
+        callback(null, "./uploads")
+    },
+    filename: (req, file, callback) => {
+        callback(null, `image-${Date.now()}- ${file.originalname}`)
+    }
+})
+
+const fileFilter = (req, file, callback) => {
+    if (file.mimetpe.startsWith("image/")) {
+        callback(null, true)
+    }
+    else {
+        callback(null, false)
+    }
+}
+
+const multerMiddleware = multer({ storage, fileFilter })
+module.exports = multerMiddleware
