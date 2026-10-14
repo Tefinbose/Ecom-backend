@@ -6,6 +6,8 @@ const cors = require("cors")
 
 const adminRoutes = require("./routes/adminRoutes")
 
+const orderRoutes= require("./routes/orderRoutes")
+
 require("./config/db")
 
 const shopifyServer = express()
@@ -15,6 +17,8 @@ shopifyServer.use(cors())
 shopifyServer.use(express.json())
 
 shopifyServer.use("/api/admin", adminRoutes)
+
+shopifyServer.use("/api/orders", orderRoutes)
 
 shopifyServer.use("/uploads", express.static("uploads"))
 
