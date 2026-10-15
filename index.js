@@ -12,7 +12,10 @@ require("./config/db")
 
 const shopifyServer = express()
 
-shopifyServer.use(cors())
+shopifyServer.use(cors({
+    origin:"http://localhost:5173",
+    credentials: true,
+}))
 
 shopifyServer.use(express.json())
 
