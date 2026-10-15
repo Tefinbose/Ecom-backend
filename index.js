@@ -6,10 +6,6 @@ const cors = require("cors")
 
 const adminRoutes = require("./routes/adminRoutes")
 
-const orderRoutes= require("./routes/orderRoutes")
-
-const userRoutes = require("./routes/userRoutes");
-
 require("./config/db")
 
 const shopifyServer = express()
@@ -22,10 +18,6 @@ shopifyServer.use(cors({
 shopifyServer.use(express.json())
 
 shopifyServer.use("/api/admin", adminRoutes)
-
-shopifyServer.use("/api/orders", orderRoutes)
-
-shopifyServer.use("/api/users",userRoutes)
 
 shopifyServer.use("/uploads", express.static("uploads"))
 

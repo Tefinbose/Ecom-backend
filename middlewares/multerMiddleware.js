@@ -5,12 +5,12 @@ const storage = multer.diskStorage({
         callback(null, "./uploads")
     },
     filename: (req, file, callback) => {
-        callback(null, `image-${Date.now()}- ${file.originalname}`)
+        callback(null, `image-${Date.now()}-${file.originalname}`)
     }
 })
 
 const fileFilter = (req, file, callback) => {
-    if (file.mimetpe.startsWith("image/")) {
+    if (file.mimetype.startsWith("image/")) {
         callback(null, true)
     }
     else {
