@@ -5,12 +5,13 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const { createOrderController, getAllOrdersController, getOrderByIdController, updateOrderStatusController, searchOrdersController,getOrderStatsController } = require("../controllers/orderController");
     
 router.use(authMiddleware);
-router.post("/", createOrderController);
-router.get("/search", searchOrdersController);
-router.get("/stats", getOrderStatsController);
+const roleMiddleware = require("../middlewares/roleMiddleware");
+router.post("/", roleMiddleware("admin"), createOrderController);
+router.get("/search", roleMiddleware("admin"), searchOrdersController);
+router.get("/stats", roleMiddleware("admin"), getOrderStatsController);
 
-router.get("/", getAllOrdersController);
-router.get("/:id", getOrderByIdController);
-router.patch("/:id/status", updateOrderStatusController);
+router.get("/", roleMiddleware("admin"), getAllOrdersController);
+router.get("/:id", roleMiddleware("admin"), getOrderByIdController);
+router.patch("/:id/status", roleMiddleware("admin"), updateOrderStatusController);
 
 module.exports = router;
