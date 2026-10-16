@@ -1,6 +1,6 @@
 const express = require("express")
 const authMiddleware = require("../middlewares/authMiddleware")
-const roleMiddleware = require("../middlewares/roleMidlleware")
+const roleMiddleware = require("../middlewares/roleMiddleware")
 const { addCollection, getAllCollections, getSingleCollection, updateCollection, deleteCollection } = require("../controllers/collectionController")
 const multerMiddleware = require("../middlewares/multerMiddleware")
 const router = express.Router()

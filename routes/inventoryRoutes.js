@@ -1,6 +1,6 @@
 const express = require("express")
 const authMiddleware = require("../middlewares/authMiddleware")
-const roleMiddleware = require("../middlewares/roleMidlleware")
+const roleMiddleware = require("../middlewares/roleMiddleware")
 const { addInventory, getAllInventory, updateInventory, deleteInventory } = require("../controllers/inventoryController")
 const router = express.Router()
 

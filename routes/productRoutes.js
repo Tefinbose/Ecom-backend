@@ -1,6 +1,6 @@
 const express = require("express")
 const authMiddleware = require("../middlewares/authMiddleware")
-const roleMiddleware = require("../middlewares/roleMidlleware")
+const roleMiddleware = require("../middlewares/roleMiddleware")
 const multerMiddleware = require("../middlewares/multerMiddleware")
 const { addProduct, getAllProducts, getSingleProduct, updateProduct, deleteProduct } = require("../controllers/productController")
 const router = express.Router()
