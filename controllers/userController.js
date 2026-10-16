@@ -97,21 +97,21 @@ exports.loginUser = async (req, res) => {
 
 // get all users
 
-exports.getAllUsers = async (req,res)=>{
-    try {
-        const users = await User.find().select(
-            "name email phone role isActive createdAt"
-        );
-        res.json({
-            count:users.length,
-            users,
-        })
-        
-    } catch (error) {
-        res.status(500).json({
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select(
+      "name email phone role isActive createdAt"
+    );
+    res.json({
+      count: users.length,
+      users,
+    })
+
+  } catch (error) {
+    res.status(500).json({
       message: "Failed to fetch users",
     });
-    }
+  }
 }
 // Get logged-in user's profile
 exports.getProfile = async (req, res) => {
@@ -179,9 +179,31 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
+// Delete a customer (admin only)
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleteUser = await User.findByIdAndDelete(id);
+    if (!deleteUser) {
+      return res.status(404).json({
+        message: "Customer not found"
+      });
+    }
+    res.status(200).json({
+      message: "Customer deleted successfully",
+      user: deleteUser,
+    })
+
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete customer", error: error.message });
+
+  }
+}
+
 // Export the controller functions
 exports.registerUser = this.registerUser;
 exports.loginUser = this.loginUser;
 exports.getAllUsers = this.getAllUsers;
 exports.getProfile = this.getProfile;
 exports.updateProfile = this.updateProfile;
+exports.deleteUser = this.deleteUser;
