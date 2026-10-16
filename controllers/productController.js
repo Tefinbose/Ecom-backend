@@ -36,6 +36,9 @@ exports.addProduct = async (req, res) => {
     if (!title) {
       return res.status(400).json({ message: "Product title is required" });
     }
+    const productHandle =
+  handle?.trim() ||
+  title.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
     const uploadedImages = req.files.map((item) => item.filename);
     console.log("Uploaded images:", uploadedImages);
@@ -79,7 +82,7 @@ exports.addProduct = async (req, res) => {
       title,
       description,
       status,
-      handle,
+      handle:productHandle,
       category,
       productType,
       vendor,
@@ -205,10 +208,7 @@ exports.updateProduct = async (req, res) => {
       }));
 
       updateQuery.$push = { media: { $each: newMedia } };
-
-      if (!existingProduct.image) {
-        updateQuery.$set.image = uploadedImages[0];
-      }
+      updateQuery.$set.image = uploadedImages[0];
     }
 
     const updatedProduct = await products.findByIdAndUpdate(id, updateQuery, {
