@@ -1,4 +1,5 @@
 const products = require("../models/productModel");
+const inventory = require("../models/inventoryModel");
 
 exports.addProduct = async (req, res) => {
   try {
@@ -114,6 +115,21 @@ exports.addProduct = async (req, res) => {
       publishedAt,
     });
 
+    // Auto-create initial inventory record for the product
+    const primaryVariant = newProduct.variants?.[0];
+    const initialQty = primaryVariant?.inventoryQuantity ?? 0;
+    await inventory.create({
+      product: newProduct._id,
+      variantId: primaryVariant?._id || null,
+      sku: primaryVariant?.sku || "",
+      locationName: "Main Warehouse",
+      onHand: initialQty,
+      available: initialQty,
+      committed: 0,
+      unavailable: 0,
+      incoming: 0,
+    }).catch((err) => console.error("Error auto-creating inventory for product:", err));
+
     return res
       .status(201)
       .json({ message: "Product added successfully", product: newProduct });
@@ -216,6 +232,36 @@ exports.updateProduct = async (req, res) => {
       runValidators: true,
     });
 
+    // Synchronize inventory document when product variants are updated
+    if (updatedProduct && updatedProduct.variants && updatedProduct.variants.length > 0) {
+      const primaryVariant = updatedProduct.variants[0];
+      const newStock = primaryVariant.inventoryQuantity ?? 0;
+      const existingInv = await inventory.findOne({ product: updatedProduct._id });
+
+      if (existingInv) {
+        existingInv.variantId = primaryVariant._id;
+        if (primaryVariant.sku) existingInv.sku = primaryVariant.sku;
+        existingInv.onHand = newStock;
+        existingInv.available = Math.max(
+          0,
+          newStock - (existingInv.committed || 0) - (existingInv.unavailable || 0)
+        );
+        await existingInv.save().catch(() => null);
+      } else {
+        await inventory.create({
+          product: updatedProduct._id,
+          variantId: primaryVariant._id,
+          sku: primaryVariant.sku || "",
+          locationName: "Main Warehouse",
+          onHand: newStock,
+          available: newStock,
+          committed: 0,
+          unavailable: 0,
+          incoming: 0,
+        }).catch(() => null);
+      }
+    }
+
     res
       .status(200)
       .json({
@@ -238,6 +284,9 @@ exports.deleteProduct = async (req, res) => {
     if (!deletedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
+
+    // Clean up associated inventory records
+    await inventory.deleteMany({ product: id }).catch(() => null);
 
     res
       .status(200)
