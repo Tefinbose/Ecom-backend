@@ -220,6 +220,13 @@ exports.getOrderStatsController = async (req, res) => {
         ]);
         const salesResult = await orders.aggregate([
             {
+                $match: {
+                    status: {
+                        $nin: ["cancelled", "canceled"]
+                    }
+                }
+            },
+            {
                 $group: {
                     _id: null,
                     totalSales: { $sum: "$totalAmount" }
